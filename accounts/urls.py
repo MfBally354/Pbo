@@ -52,12 +52,4 @@ urlpatterns = [
     path("drivers/delete/<int:user_id>/", views.delete_driver, name="delete_driver"),
     path("api/driver/<int:user_id>/", views.get_driver_api, name="get_driver_api"),
 
-    # DRIVER PANEL
-    # path("drivers/dashboard/", views.driver_dashboard, name="driver_dashboard"),
-    # path("driver/orders/available/", views.driver_available_orders, name="driver_available_orders"),
-    # path("driver/orders/my/", views.driver_my_orders, name="driver_my_orders"),
-    # path("driver/orders/<int:order_id>/accept/", views.driver_accept_order, name="driver_accept_order"),
-    # path("driver/orders/<int:order_id>/update/", views.driver_update_status, name="driver_update_order"),
-    # path("driver/history/", views.driver_history, name="driver_history"),
-
 ]
