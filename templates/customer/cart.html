@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-2xl font-bold text-orange-600">OkJek</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'customers:browse_restaurants' %}" class="text-gray-700 hover:text-orange-600">Restoran</a>
+                    <a href="{% url 'accounts:logout' %}" class="text-red-600 hover:text-red-800">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Keranjang Belanja</h2>
+
+        {% if cart_items %}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="space-y-4">
+                {% for item in cart_items %}
+                <div class="flex items-center justify-between border-b pb-4">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">{{ item.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ item.restaurant_name }}</p>
+                        <p class="text-orange-600 font-bold mt-1">Rp {{ item.price|floatformat:0 }} × {{ item.quantity }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="font-bold text-gray-900">Rp {{ item.subtotal|floatformat:0 }}</p>
+                            <form method="POST" action="{% url 'customers:update_cart_item' item.id %}" class="mt-2">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" 
+                                       class="w-16 px-2 py-1 border rounded text-sm"
+                                       onchange="this.form.submit()">
+                            </form>
+                        </div>
+                        <a href="{% url 'customers:remove_from_cart' item.id %}" 
+                           class="text-red-600 hover:text-red-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 pt-6 border-t">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xl font-bold">Total:</span>
+                    <span class="text-2xl font-bold text-orange-600">Rp {{ total_price|floatformat:0 }}</span>
+                </div>
+                <a href="{% url 'customers:checkout' %}" 
+                   class="block w-full bg-orange-600 text-white text-center py-3 rounded-lg hover:bg-orange-700 transition text-lg font-semibold">
+                    Lanjut ke Checkout
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <p class="text-gray-500 text-xl mb-6">Keranjang Anda kosong</p>
+            <a href="{% url 'customers:browse_restaurants' %}" 
+               class="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition">
+                Mulai Belanja
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

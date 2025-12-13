@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu {{ restaurant.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-2xl font-bold text-orange-600">OkJek</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'customers:browse_restaurants' %}" class="text-gray-700 hover:text-orange-600">Restoran</a>
+                    <a href="{% url 'customers:view_cart' %}" class="text-gray-700 hover:text-orange-600">Keranjang</a>
+                    <a href="{% url 'accounts:logout' %}" class="text-red-600 hover:text-red-800">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Restaurant Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-3xl font-bold text-gray-900">{{ restaurant.name }}</h2>
+            <p class="text-gray-600 mt-2">{{ restaurant.address }}</p>
+            {% if restaurant.description %}
+            <p class="text-gray-500 mt-2">{{ restaurant.description }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Menu Items -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Menu</h3>
+            
+            {% if menu_items %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in menu_items %}
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-semibold text-gray-900">{{ item.name }}</h4>
+                            <p class="text-orange-600 font-bold mt-1">Rp {{ item.price|floatformat:0 }}</p>
+                        </div>
+                        {% if item.stock > 0 %}
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Stok: {{ item.stock }}</span>
+                        {% else %}
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Habis</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if item.description %}
+                    <p class="text-gray-600 text-sm mb-4">{{ item.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    
+                    {% if item.stock > 0 %}
+                    <form method="POST" action="{% url 'customers:add_to_cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="menu_item_id" value="{{ item.id }}">
+                        <div class="flex items-center gap-2 mb-3">
+                            <label class="text-sm text-gray-600">Jumlah:</label>
+                            <input type="number" name="quantity" value="1" min="1" max="{{ item.stock }}"
+                                   class="w-20 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <button type="submit" 
+                                class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition">
+                            Tambah ke Keranjang
+                        </button>
+                    </form>
+                    {% else %}
+                    <button disabled class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed">
+                        Stok Habis
+                    </button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <p class="text-gray-500">Belum ada menu tersedia</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

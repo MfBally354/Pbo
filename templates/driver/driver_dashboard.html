@@ -1,0 +1,112 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:p-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Driver Dashboard</h1>
+    <p class="text-lg text-gray-600 mb-8">Logged in as: <span class="font-semibold">{{ request.user.username }}</span></p>
+
+    <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-green-200">
+        <h2 class="text-xl font-semibold text-green-700 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+            </svg>
+            Saldo & Keuangan
+        </h2>
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-4xl font-extrabold text-gray-900">
+                Rp {{ request.user.driver.balance|floatformat:2|default:"0.00" }}
+            </p>
+            <div class="mt-4 md:mt-0 space-x-3">
+                <a href="{% url 'drivers:request_withdrawal' %}" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 shadow-md">
+                    Ajukan Penarikan
+                </a>
+                <a href="{% url 'drivers:driver_withdrawal_history' %}" class="text-green-600 border border-green-600 hover:bg-green-50 py-2 px-4 rounded-lg transition duration-150">
+                    Riwayat Penarikan
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="p-3 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 bg-white shadow-xl rounded-xl p-6 border border-gray-100">
+            <h2 class="text-2xl font-semibold text-orange-600 mb-4">
+                <i class="fas fa-motorcycle mr-2"></i> Order Aktif Anda
+            </h2>
+
+            {% if active_order %}
+                <div class="border-l-4 border-orange-500 p-4 bg-orange-50 rounded-lg">
+                    <h3 class="font-bold text-lg text-orange-800">Order #{{ active_order.id }}</h3>
+                    <p>Status: <span class="font-semibold">{{ active_order.get_status_display }}</span></p>
+                    <p>Dari Restoran: {{ active_order.restaurant.name }}</p>
+                    <p>Tujuan: [Alamat Customer]</p>
+                    
+                    <div class="mt-4 space-x-2">
+                        {% include 'driver/partials/_status_update_form.html' with order=active_order %}
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-gray-500">Saat ini Anda tidak memiliki Order yang sedang berjalan.</p>
+            {% endif %}
+        </div>
+
+        <div class="space-y-6">
+            
+            <div class="bg-white shadow-lg rounded-xl p-5 border border-gray-100">
+                <h3 class="text-xl font-semibold text-indigo-700 mb-4">
+                    <i class="fas fa-list-ul mr-2"></i> Order Tersedia
+                </h3>
+                {% if available_orders %}
+                    <ul class="space-y-3">
+                        {% for order in available_orders|slice:":5" %}
+                        <li class="p-3 border rounded-lg flex justify-between items-center bg-indigo-50">
+                            <span class="font-medium">#{{ order.id }} - {{ order.restaurant.name }}</span>
+                            <form method="POST" action="{% url 'drivers:take_order' order.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="text-sm bg-indigo-500 hover:bg-indigo-600 text-white py-1 px-3 rounded">
+                                    Ambil
+                                </button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'drivers:driver_available_orders' %}" class="mt-3 block text-sm text-center text-indigo-600 hover:text-indigo-800">Lihat Semua Order</a>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Belum ada order yang siap diambil.</p>
+                {% endif %}
+            </div>
+
+            <div class="bg-white shadow-lg rounded-xl p-5 border border-gray-100">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">
+                    <i class="fas fa-history mr-2"></i> Riwayat Singkat
+                </h3>
+                {% if history %}
+                    <ul class="space-y-2 text-sm">
+                        {% for order in history|slice:":3" %}
+                        <li class="flex justify-between border-b pb-1">
+                            <span>#{{ order.id }}</span>
+                            <span class="text-green-600 font-semibold">{{ order.delivered_at|date:"d M H:i" }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'drivers:driver_history' %}" class="mt-3 block text-sm text-center text-gray-600 hover:text-gray-800">Lihat Riwayat Lengkap</a>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Belum ada riwayat pengiriman.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock content %}

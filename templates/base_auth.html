@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: url("{% static 'images/bg_login.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        /* Card putih transparan */
+        .auth-card {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 35px;
+            backdrop-filter: blur(6px);
+        }
+
+        /* Warna tema OkJek */
+        .brand-color {
+            color: #FF7A00; /* OREN OKJEK */
+        }
+    </style>
+</head>
+<body class="relative flex justify-center items-center p-4">
+
+    <!-- LAYER BLUR -->
+    <div class="absolute inset-0 backdrop-blur-md bg-white/10"></div>
+
+    <!-- CARD LOGIN -->
+    <div class="auth-card shadow-lg w-full max-w-lg relative z-10">
+        <h2 class="text-3xl font-bold mb-1 text-center brand-color">{{ title }}</h2>
+        <p class="text-gray-600 mb-4 text-center">{{ subtitle }}</p>
+
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+
+</html>

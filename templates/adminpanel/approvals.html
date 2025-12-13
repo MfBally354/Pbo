@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ffc400, #ff9800);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 196, 0, 0.3);
+        color: white;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        margin: 10px 0;
+        font-weight: bold;
+        color: #ffc400;
+    }
+
+    .stat-card p {
+        color: #666;
+        margin: 0;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #ffc400, #ff9800);
+        color: white;
+    }
+
+    .table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-driver {
+        background-color: #2979ff;
+        color: white;
+    }
+
+    .badge-restaurant {
+        background-color: #ff6f00;
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: 0.2s ease;
+        font-weight: 600;
+    }
+
+    .btn-approve {
+        background-color: #00c853;
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background-color: #009d3d;
+        transform: translateY(-2px);
+    }
+
+    .btn-reject {
+        background-color: #ff3d00;
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background-color: #dd2c00;
+        transform: translateY(-2px);
+    }
+
+    .btn-view {
+        background-color: #2979ff;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background-color: #0068ff;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .empty-state .icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .filter-section {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        background: white;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        border-color: #ffc400;
+        background-color: #ffc400;
+        color: white;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+        background: none;
+        border: none;
+    }
+
+    .close-btn:hover {
+        color: #333;
+    }
+
+    .detail-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #666;
+    }
+
+    .detail-value {
+        color: #333;
+        text-align: right;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+
+<div class="container mt-5">
+    
+    <div class="page-header">
+        <h1 class="fw-bold">⏳ Pending Approvals</h1>
+        <a href="{% url 'accounts:admin_dashboard' %}" class="btn-primary">← Back to Dashboard</a>
+    </div>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <p>Total Pending</p>
+            <h3>{{ pending_count|default:"0" }}</h3>
+        </div>
+        <div class="stat-card">
+            <p>Pending Drivers</p>
+            <h3>{{ pending_drivers|default:"0" }}</h3>
+        </div>
+        <div class="stat-card">
+            <p>Pending Restaurants</p>
+            <h3>{{ pending_restaurants|default:"0" }}</h3>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterApprovals('all')">All Pending</button>
+            <button class="filter-btn" onclick="filterApprovals('driver')">Drivers Only</button>
+            <button class="filter-btn" onclick="filterApprovals('restaurant')">Restaurants Only</button>
+        </div>
+
+        {% if pending %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Name/Business</th>
+                    <th>Phone</th>
+                    <th>Registered Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in pending %}
+                <tr data-type="{{ user.role }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.role == 'driver' %}
+                        <span class="badge badge-driver">🚚 Driver</span>
+                        {% elif user.role == 'restaurant' %}
+                        <span class="badge badge-restaurant">🏪 Restaurant</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.role == 'driver' and user.driverprofile %}
+                        {{ user.driverprofile.full_name|default:"N/A" }}
+                        {% elif user.role == 'restaurant' and user.restaurantprofile %}
+                        {{ user.restaurantprofile.restaurant_name|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.role == 'driver' and user.driverprofile %}
+                        {{ user.driverprofile.phone|default:"N/A" }}
+                        {% elif user.role == 'restaurant' and user.restaurantprofile %}
+                        {{ user.restaurantprofile.phone|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ user.date_joined|date:"d M Y H:i" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="viewUser({{ user.id }}, '{{ user.role }}')" class="btn-sm btn-view" title="View Details">👁️ View</button>
+                            <form method="POST" action="{% url 'accounts:approve_user' user.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-approve" title="Approve">✓ Approve</button>
+                            </form>
+                            <form method="POST" action="{% url 'accounts:reject_user' user.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to reject this account?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-reject" title="Reject">✗ Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">✅</div>
+            <h3>All Clear!</h3>
+            <p>There are no pending approvals at the moment.</p>
+            <p style="margin-top: 10px; color: #999;">New driver and restaurant registrations will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- View Details Modal -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">User Details</h2>
+            <button class="close-btn" onclick="closeViewModal()">&times;</button>
+        </div>
+        <div id="viewContent">
+            <p style="text-align: center; color: #999;">Loading...</p>
+        </div>
+        <div class="action-buttons" style="margin-top: 20px; justify-content: center;">
+            <form id="approveForm" method="POST" action="" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm btn-approve">✓ Approve</button>
+            </form>
+            <form id="rejectForm" method="POST" action="" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm btn-reject" onclick="return confirm('Are you sure you want to reject this account?');">✗ Reject</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterApprovals(type) {
+    const rows = document.querySelectorAll('tbody tr');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    rows.forEach(row => {
+        if (type === 'all') {
+            row.style.display = '';
+        } else {
+            if (row.dataset.type === type) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+}
+
+function viewUser(userId, role) {
+    const endpoint = role === 'driver' 
+        ? `{% url 'accounts:get_driver_api' 0 %}`.replace('0', userId)
+        : `{% url 'accounts:get_restaurant_api' 0 %}`.replace('0', userId);
+    
+    fetch(endpoint)
+        .then(response => response.json())
+        .then(data => {
+            let content = '<div>';
+            
+            // Basic Info
+            content += '<div class="detail-row"><span class="detail-label">Username:</span><span class="detail-value">' + data.username + '</span></div>';
+            content += '<div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">' + data.email + '</span></div>';
+            
+            if (role === 'driver') {
+                content += '<div class="detail-row"><span class="detail-label">Full Name:</span><span class="detail-value">' + (data.full_name || 'N/A') + '</span></div>';
+                content += '<div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value">' + (data.phone || 'N/A') + '</span></div>';
+                content += '<div class="detail-row"><span class="detail-label">Vehicle Type:</span><span class="detail-value">' + (data.vehicle_type || 'N/A') + '</span></div>';
+                content += '<div class="detail-row"><span class="detail-label">Vehicle Number:</span><span class="detail-value">' + (data.vehicle_number || 'N/A') + '</span></div>';
+            } else if (role === 'restaurant') {
+                content += '<div class="detail-row"><span class="detail-label">Restaurant Name:</span><span class="detail-value">' + (data.restaurant_name || 'N/A') + '</span></div>';
+                content += '<div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value">' + (data.phone || 'N/A') + '</span></div>';
+                content += '<div class="detail-row"><span class="detail-label">Address:</span><span class="detail-value">' + (data.address || 'N/A') + '</span></div>';
+            }
+            
+            content += '<div class="detail-row"><span class="detail-label">Registered Date:</span><span class="detail-value">' + data.date_joined + '</span></div>';
+            content += '</div>';
+            
+            document.getElementById('viewContent').innerHTML = content;
+            document.getElementById('modalTitle').textContent = (role === 'driver' ? 'Driver' : 'Restaurant') + ' Details';
+            
+            // Update form actions
+            document.getElementById('approveForm').action = `{% url 'accounts:approve_user' 0 %}`.replace('0', userId);
+            document.getElementById('rejectForm').action = `{% url 'accounts:reject_user' 0 %}`.replace('0', userId);
+            
+            document.getElementById('viewModal').classList.add('show');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('viewContent').innerHTML = '<p style="text-align: center; color: #ff3d00;">Failed to load user details</p>';
+        });
+}
+
+function closeViewModal() {
+    document.getElementById('viewModal').classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('viewModal');
+    if (event.target == modal) {
+        closeViewModal();
+    }
+}
+</script>
+
+{% endblock %}

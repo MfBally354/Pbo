@@ -1,0 +1,608 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2979ff, #0068ff);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(41, 121, 255, 0.3);
+        color: white;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #00c853, #009d3d);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+        color: white;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #2979ff, #0068ff);
+        color: white;
+    }
+
+    .table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background-color: #00c853;
+        color: white;
+    }
+
+    .badge-warning {
+        background-color: #ffc400;
+        color: #333;
+    }
+
+    .badge-danger {
+        background-color: #ff3d00;
+        color: white;
+    }
+
+    .badge-info {
+        background-color: #2979ff;
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-edit {
+        background-color: #2979ff;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #0068ff;
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: #ff3d00;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #dd2c00;
+    }
+
+    .btn-view {
+        background-color: #00c853;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background-color: #009d3d;
+        color: white;
+    }
+
+    .btn-approve {
+        background-color: #00c853;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .btn-approve:hover {
+        background-color: #009d3d;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .filter-section {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        background: white;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        border-color: #2979ff;
+        background-color: #2979ff;
+        color: white;
+    }
+
+    /* Modal Styles */
+    .driver-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        pointer-events: none !important;
+    }
+
+    .driver-modal.show {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto !important;
+    }
+
+    .driver-modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .driver-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .driver-modal-header h2 {
+        margin: 0;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+        background: none;
+        border: none;
+    }
+
+    .close-btn:hover {
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2979ff;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        background-color: #999;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        background-color: #777;
+    }
+</style>
+
+<div class="container mt-5">
+    
+    <div class="page-header">
+        <h1 class="fw-bold">🚚 Manage Drivers</h1>
+        <div class="header-actions">
+            <button onclick="openAddModal()" class="btn-success">+ Add Driver</button>
+            <a href="{% url 'accounts:admin_dashboard' %}" class="btn-primary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div style="margin-bottom: 20px;">
+        {% for message in messages %}
+        <div style="padding: 15px; background-color: {% if message.tags == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if message.tags == 'success' %}#155724{% else %}#721c24{% endif %}; border-radius: 8px; margin-bottom: 10px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-container">
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterDrivers('all')">All Drivers</button>
+            <button class="filter-btn" onclick="filterDrivers('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterDrivers('pending')">Pending</button>
+        </div>
+
+        {% if drivers %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Vehicle Info</th>
+                    <th>Status</th>
+                    <th>Joined Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in drivers %}
+                <tr data-status="{% if driver.is_approved %}approved{% else %}pending{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ driver.username }}</strong></td>
+                    <td>
+                        {% if driver.driverprofile %}
+                        {{ driver.driverprofile.full_name|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ driver.email }}</td>
+                    <td>
+                        {% if driver.driverprofile %}
+                        {{ driver.driverprofile.phone|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.driverprofile %}
+                        <strong>{{ driver.driverprofile.vehicle_type|default:"N/A" }}</strong>
+                        <br><small>{{ driver.driverprofile.vehicle_number|default:"N/A" }}</small>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.is_approved %}
+                        <span class="badge badge-success">✓ Approved</span>
+                        {% else %}
+                        <span class="badge badge-warning">⏳ Pending</span>
+                        <form method="POST" action="{% url 'accounts:approve_user' driver.id %}" style="display: inline; margin-left: 5px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-approve">Approve</button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if driver.is_active %}
+                        <span class="badge badge-info">🟢 Online</span>
+                        {% else %}
+                        <span class="badge badge-danger">⚫ Offline</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ driver.date_joined|date:"d M Y" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="viewDriver({{ driver.id }})" class="btn-sm btn-view" title="View Details">👁️</button>
+                            <button onclick="editDriver({{ driver.id }})" class="btn-sm btn-edit" title="Edit">✏️</button>
+                            <form method="POST" action="{% url 'accounts:delete_driver' driver.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this driver?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-delete" title="Delete">🗑️</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <h3>🚚 No Drivers Yet</h3>
+            <p>There are no registered drivers in the system.</p>
+            <button onclick="openAddModal()" class="btn-success" style="margin-top: 20px;">+ Add First Driver</button>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="driverModal" class="driver-modal">
+    <div class="driver-modal-content">
+        <div class="driver-modal-header">
+            <h2 id="modalTitle">Add Driver</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="driverForm" method="POST" action="">
+            {% csrf_token %}
+            <input type="hidden" id="driverId" name="driver_id">
+            
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group" id="passwordGroup">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password">
+            </div>
+            
+            <div class="form-group">
+                <label for="full_name">Full Name *</label>
+                <input type="text" id="full_name" name="full_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="vehicle_type">Vehicle Type</label>
+                <input type="text" id="vehicle_type" name="vehicle_type" placeholder="e.g., Motorcycle, Car">
+            </div>
+            
+            <div class="form-group">
+                <label for="vehicle_number">Vehicle Number</label>
+                <input type="text" id="vehicle_number" name="vehicle_number" placeholder="e.g., B 1234 XYZ">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-success">Save Driver</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div id="viewModal" class="modal">
+    <div class="driver-modal-content">
+        <div class="driver-modal-header">
+            <h2>Driver Details</h2>
+            <button class="close-btn" onclick="closeViewModal()">&times;</button>
+        </div>
+        <div id="viewContent"></div>
+    </div>
+</div>
+
+<script>
+function filterDrivers(status) {
+    const rows = document.querySelectorAll('tbody tr');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            if (row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Driver';
+    document.getElementById('driverForm').action = '{% url "accounts:add_driver" %}';
+    document.getElementById('driverForm').reset();
+    document.getElementById('driverId').value = '';
+    document.getElementById('passwordGroup').style.display = 'block';
+    document.getElementById('password').required = true;
+    document.getElementById('driverModal').classList.add('show');
+}
+
+function editDriver(id) {
+    document.getElementById('modalTitle').textContent = 'Edit Driver';
+    document.getElementById('driverForm').action = '{% url "accounts:edit_driver" 0 %}'.replace('0', id);
+    document.getElementById('driverId').value = id;
+    document.getElementById('passwordGroup').style.display = 'none';
+    document.getElementById('password').required = false;
+    
+    fetch(`{% url 'accounts:get_driver_api' 0 %}`.replace('0', id))
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('username').value = data.username;
+            document.getElementById('email').value = data.email;
+            document.getElementById('full_name').value = data.full_name || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('vehicle_type').value = data.vehicle_type || '';
+            document.getElementById('vehicle_number').value = data.vehicle_number || '';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load driver data');
+        });
+    
+    document.getElementById('driverModal').classList.add('show');
+}
+
+function viewDriver(id) {
+    fetch(`{% url 'accounts:get_driver_api' 0 %}`.replace('0', id))
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div style="line-height: 1.8;">
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Email:</strong> ${data.email}</p>
+                    <p><strong>Full Name:</strong> ${data.full_name || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
+                    <p><strong>Vehicle Type:</strong> ${data.vehicle_type || 'N/A'}</p>
+                    <p><strong>Vehicle Number:</strong> ${data.vehicle_number || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${data.is_approved ? '✓ Approved' : '⏳ Pending'}</p>
+                    <p><strong>Active:</strong> ${data.is_active ? '🟢 Online' : '⚫ Offline'}</p>
+                    <p><strong>Joined:</strong> ${data.date_joined}</p>
+                </div>
+            `;
+            document.getElementById('viewContent').innerHTML = content;
+            document.getElementById('viewModal').classList.add('show');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load driver details');
+        });
+}
+
+function closeModal() {
+    closeAllModals();
+    document.getElementById('driverModal').classList.remove('show');
+}
+
+function closeViewModal() {
+    closeAllModals();
+    document.getElementById('viewModal').classList.remove('show');
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('driverModal');
+    const viewModal = document.getElementById('viewModal');
+    if (event.target == modal) {
+        closeModal();
+    }
+    if (event.target == viewModal) {
+        closeViewModal();
+    }
+}
+</script>
+
+
+<script>
+// Tutup semua modal sekaligus
+function closeAllModals() {
+    document.querySelectorAll('.driver-modal').forEach(m => {
+        m.classList.remove('show');
+    });
+}
+
+// Tutup modal jika klik di luar konten
+window.addEventListener('click', function(e) {
+    document.querySelectorAll('.driver-modal').forEach(modal => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
+});
+</script>
+
+
+{% endblock %}

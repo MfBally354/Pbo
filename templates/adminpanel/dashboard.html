@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .dash-card {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 25px;
+        border-radius: 18px;
+        color: rgb(0, 0, 0);
+        text-decoration: none !important;
+        transition: 0.2s ease;
+        
+        box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    }
+
+    .dash-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .dash-card h2 {
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: bold;
+    }
+
+    .dash-card p {
+        margin-top: 5px;
+        font-size: 1.1rem;
+    }
+
+    .dash-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    /* Warna */
+    .bg-green { background: linear-gradient(135deg, #00c853, #009d3d); }
+    .bg-orange { background: linear-gradient(135deg, #ff6f00, #ff3d00); }
+    .bg-blue { background: linear-gradient(135deg, #2979ff, #0068ff); }
+    .bg-purple { background: linear-gradient(135deg, #b620ff, #9330ff); }
+    .bg-yellow { background: linear-gradient(135deg, #ffc400, #ff9800); }
+</style>
+
+<div class="container mt-5">
+
+    <h1 class="fw-bold">Admin Dashboard</h1>
+
+    <div class="dashboard-grid">
+
+        <!-- Pending Approvals -->
+        <a href="{% url 'accounts:approvals' %}" class="dash-card bg-yellow">
+            <div>
+                <div class="dash-icon">⏳</div>
+                <h2>{{ pending_count }}</h2>
+                <p>Pending Approvals</p>
+            </div>
+        </a>
+
+        <!-- Total Drivers -->
+        <a href="{% url 'accounts:drivers' %}" class="dash-card bg-blue">
+            <div>
+                <div class="dash-icon">🚚</div>
+                <h2>{{ drivers_count }}</h2>
+                <p>Total Drivers</p>
+            </div>
+        </a>
+
+        <!-- Total Restaurants -->
+        <a href="{% url 'accounts:restaurants' %}" class="dash-card bg-orange">
+            <div>
+                <div class="dash-icon">🏪</div>
+                <h2>{{ restaurants_count }}</h2>
+                <p>Total Restaurants</p>
+            </div>
+        </a>
+
+        <!-- Active Orders -->
+        <a href="{% url 'accounts:orders' %}" class="dash-card bg-purple">
+            <div>
+                <div class="dash-icon">📦</div>
+                <h2>{{ active_orders }}</h2>
+                <p>Active Orders</p>
+            </div>
+        </a>
+
+        <!-- Chat Panel -->
+        <a href="{% url 'accounts:chat' %}" class="dash-card bg-green">
+            <div>
+                <div class="dash-icon">💬</div>
+                <h2>Chat</h2>
+            </div>
+        </a>
+
+        <!-- Admin Support -->
+        <a href="{% url 'chats:admin_support' %}" class="dash-card bg-green">
+            <div>
+                <div class="dash-icon">🎫</div>
+                <h2>{{ support_count }}</h2>
+                <p>Admin Support</p>
+            </div>
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

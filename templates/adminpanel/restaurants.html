@@ -1,0 +1,564 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ff6f00, #ff3d00);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 111, 0, 0.3);
+        color: white;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #00c853, #009d3d);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+        color: white;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #ff6f00, #ff3d00);
+        color: white;
+    }
+
+    .table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background-color: #00c853;
+        color: white;
+    }
+
+    .badge-warning {
+        background-color: #ffc400;
+        color: #333;
+    }
+
+    .badge-danger {
+        background-color: #ff3d00;
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-edit {
+        background-color: #2979ff;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #0068ff;
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: #ff3d00;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #dd2c00;
+    }
+
+    .btn-view {
+        background-color: #00c853;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background-color: #009d3d;
+        color: white;
+    }
+
+    .btn-approve {
+        background-color: #00c853;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .btn-approve:hover {
+        background-color: #009d3d;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    /* Modal Styles */
+    .restaurant-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        animation: fadeIn 0.3s;
+        pointer-events: none !important;
+    }
+
+    .restaurant-modal.show {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto !important;
+    }
+
+    .restaurant-modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .restaurant-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .restaurant-modal-header h2 {
+        margin: 0;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+        background: none;
+        border: none;
+    }
+
+    .close-btn:hover {
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #ff6f00;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        background-color: #999;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        background-color: #777;
+    }
+</style>
+
+<div class="container mt-5">
+    
+    <div class="page-header">
+        <h1 class="fw-bold">🏪 Manage Restaurants</h1>
+        <div class="header-actions">
+            <button onclick="openAddModal()" class="btn-success">+ Add Restaurant</button>
+            <a href="{% url 'accounts:admin_dashboard' %}" class="btn-primary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div style="margin-bottom: 20px;">
+        {% for message in messages %}
+        <div style="padding: 15px; background-color: {% if message.tags == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if message.tags == 'success' %}#155724{% else %}#721c24{% endif %}; border-radius: 8px; margin-bottom: 10px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-container">
+        {% if restaurants %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Restaurant Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Joined Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for restaurant in restaurants %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ restaurant.username }}</strong></td>
+                    <td>
+                        {% if restaurant.restaurantprofile %}
+                        {{ restaurant.restaurantprofile.restaurant_name|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ restaurant.email }}</td>
+                    <td>
+                        {% if restaurant.restaurantprofile %}
+                        {{ restaurant.restaurantprofile.phone|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if restaurant.restaurantprofile %}
+                        {{ restaurant.restaurantprofile.address|truncatewords:5|default:"N/A" }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if restaurant.is_approved %}
+                        <span class="badge badge-success">✓ Approved</span>
+                        {% else %}
+                        <span class="badge badge-warning">⏳ Pending</span>
+                        <form method="POST" action="{% url 'accounts:approve_user' restaurant.id %}" style="display: inline; margin-left: 5px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-approve">Approve</button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if restaurant.is_active %}
+                        <span class="badge badge-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ restaurant.date_joined|date:"d M Y" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="viewRestaurant({{ restaurant.id }})" class="btn-sm btn-view" title="View Details">👁️</button>
+                            <button onclick="editRestaurant({{ restaurant.id }})" class="btn-sm btn-edit" title="Edit">✏️</button>
+                            <form method="POST" action="{% url 'accounts:delete_restaurant' restaurant.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this restaurant?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-delete" title="Delete">🗑️</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <h3>🏪 No Restaurants Yet</h3>
+            <p>There are no registered restaurants in the system.</p>
+            <button onclick="openAddModal()" class="btn-success" style="margin-top: 20px;">+ Add First Restaurant</button>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="restaurantModal" class="restaurant-modal">
+
+    <div class="restaurant-modal-content">
+        <div class="restaurant-modal-header">
+            <h2 id="modalTitle">Add Restaurant</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="restaurantForm" method="POST" action="">
+            {% csrf_token %}
+            <input type="hidden" id="restaurantId" name="restaurant_id">
+            
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group" id="passwordGroup">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password">
+            </div>
+            
+            <div class="form-group">
+                <label for="restaurant_name">Restaurant Name *</label>
+                <input type="text" id="restaurant_name" name="restaurant_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="3"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-success">Save Restaurant</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div id="viewModal" class="restaurant-modal">
+    <div class="restaurant-modal-content">
+        <div class="restaurant-modal-header">
+            <h2>Restaurant Details</h2>
+            <button class="close-btn" onclick="closeViewModal()">&times;</button>
+        </div>
+        <div id="viewContent"></div>
+    </div>
+</div>
+
+<script>
+function openAddModal() {
+    console.log('Opening add modal...'); // Debug
+    document.getElementById('modalTitle').textContent = 'Add Restaurant';
+    document.getElementById('restaurantForm').action = '{% url "accounts:add_restaurant" %}';
+    document.getElementById('restaurantForm').reset();
+    document.getElementById('restaurantId').value = '';
+    document.getElementById('passwordGroup').style.display = 'block';
+    document.getElementById('password').required = true;
+    document.getElementById('restaurantModal').classList.add('show');
+}
+
+function editRestaurant(id) {
+    document.getElementById('modalTitle').textContent = 'Edit Restaurant';
+    document.getElementById('restaurantForm').action = '{% url "accounts:edit_restaurant" 0 %}'.replace('0', id);
+    document.getElementById('restaurantId').value = id;
+    document.getElementById('passwordGroup').style.display = 'none';
+    document.getElementById('password').required = false;
+    
+    // Fetch restaurant data
+    fetch(`/accounts/api/restaurant/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('username').value = data.username;
+            document.getElementById('email').value = data.email;
+            document.getElementById('restaurant_name').value = data.restaurant_name || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('address').value = data.address || '';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load restaurant data');
+        });
+    
+    document.getElementById('restaurantModal').classList.add('show');
+}
+
+function viewRestaurant(id) {
+    fetch(`/accounts/api/restaurant/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div style="line-height: 1.8;">
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Email:</strong> ${data.email}</p>
+                    <p><strong>Restaurant Name:</strong> ${data.restaurant_name || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${data.address || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${data.is_approved ? '✓ Approved' : '⏳ Pending'}</p>
+                    <p><strong>Active:</strong> ${data.is_active ? 'Yes' : 'No'}</p>
+                    <p><strong>Joined:</strong> ${data.date_joined}</p>
+                </div>
+            `;
+            document.getElementById('viewContent').innerHTML = content;
+            document.getElementById('viewModal').classList.add('show');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load restaurant details');
+        });
+}
+
+function closeModal() {
+    document.getElementById('restaurantModal').classList.remove('show');
+    closeAllModals();
+}
+
+function closeViewModal() {
+    document.getElementById('viewModal').classList.remove('show');
+    closeAllModals();
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('restaurantModal');
+    const viewModal = document.getElementById('viewModal');
+    if (event.target == modal) {
+        closeModal();
+    }
+    if (event.target == viewModal) {
+        closeViewModal();
+    }
+}
+</script>
+
+
+<script>
+// Tutup semua modal sekaligus
+function closeAllModals() {
+    document.querySelectorAll('.restaurant-modal').forEach(m => {
+        m.classList.remove('show');
+    });
+}
+
+// Tutup modal jika klik di luar konten
+window.addEventListener('click', function(e) {
+    document.querySelectorAll('.restaurant-modal').forEach(modal => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
+});
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="fw-bold mb-4">🍽 Restaurant Dashboard</h2>
+
+    <div class="row g-4">
+
+        <!-- Menu Management -->
+        <div class="col-md-4">
+            <a href="{% url 'restaurants:menu_list' resto.id %}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 dashboard-card">
+                    <h3>📋 Menu</h3>
+                    <p>Manage your restaurant menu items.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Orders -->
+        <div class="col-md-4">
+            <a href="{% url 'restaurants:restaurant_orders' resto.id %}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 dashboard-card">
+                    <h3>🛒 Orders</h3>
+                    <p>View and update active orders.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Payments -->
+        <div class="col-md-4">
+            <a href="{% url 'restaurants:restaurant_payments' resto.id%}" class="text-decoration-none">
+                <div class="card shadow-sm p-4 dashboard-card">
+                    <h3>💳 Payments</h3>
+                    <p>Confirm completed customer payments.</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+.dashboard-card {
+    border-radius: 12px;
+    transition: .2s ease;
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0,0,0,.15);
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="fw-bold mb-4">🛒 Restaurant Orders</h2>
+
+    {% for order in orders %}
+    <div class="card p-3 mb-3 shadow-sm">
+        <h5>Order #{{ order.id }}</h5>
+        <p>Customer: {{ order.customer.username }}</p>
+        <p>Status: <strong>{{ order.status }}</strong></p>
+
+        {% if order.status == "pending" %}
+            <a href="{% url 'restaurants:accept_order' order.id %}" class="btn btn-primary btn-sm">Accept Order</a>
+
+        {% elif order.status == "accepted" %}
+            <a href="{% url 'restaurants:prepare_order' order.id %}" class="btn btn-warning btn-sm">Start Preparing</a>
+
+        {% elif order.status == "preparing" %}
+            <a href="{% url 'restaurants:ready_order' order.id %}" class="btn btn-success btn-sm">Ready for Pickup</a>
+
+        {% elif order.status == "ready_for_pickup" %}
+            <span class="badge bg-success">Waiting for driver...</span>
+        {% endif %}
+
+        <a href="{% url 'restaurants:payment_view' order.id %}" class="btn btn-dark btn-sm mt-2">Payment</a>
+    </div>
+    {% empty %}
+    <p>No orders yet.</p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

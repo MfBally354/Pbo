@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Available Orders</h2>
+
+{% if orders %}
+<table>
+    <tr><th>ID</th><th>Restaurant</th><th>Action</th></tr>
+    {% for o in orders %}
+    <tr>
+        <td>#{{ o.id }}</td>
+        <td>{{ o.restaurant.restaurant_profile.name }}</td>
+        <td>
+            <a href="{% url 'accounts:driver_accept_order' o.id %}" class="btn btn-success">Accept</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No available orders.</p>
+{% endif %}
+{% endblock %}

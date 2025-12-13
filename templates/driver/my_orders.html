@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Active Orders</h2>
+
+{% if orders %}
+<table>
+    <tr><th>ID</th><th>Status</th><th>Update</th></tr>
+    {% for o in orders %}
+    <tr>
+        <td>#{{ o.id }}</td>
+        <td>{{ o.get_status_display }}</td>
+        <td>
+            <form method="POST" action="{% url 'accounts:driver_update_order' o.id %}">
+                {% csrf_token %}
+                <select name="status">
+                    <option value="delivering">Delivering</option>
+                    <option value="delivered">Delivered</option>
+                </select>
+                <button type="submit">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No active orders yet.</p>
+{% endif %}
+{% endblock %}

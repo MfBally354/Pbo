@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3>🚚 Driver Dashboard</h3>
+    <p>Logged in as: <strong>{{ user.username }}</strong></p>
+
+    <!-- ACTIVE ORDER -->
+    <div class="card p-4 mt-4">
+        <h4>📦 Active Order</h4>
+        <hr>
+
+        {% if active_order %}
+            <p><strong>Order #{{ active_order.id }}</strong></p>
+            <p>Restaurant: {{ active_order.restaurant.restaurant_profile.name }}</p>
+            <p>Customer: {{ active_order.customer.customer_profile.user.username }}</p>
+            <p>Status: <strong>{{ active_order.status }}</strong></p>
+
+            {% if active_order.status == "accepted" %}
+                <a href="{% url 'drivers:update_status' active_order.id 'picked' %}"
+                   class="btn btn-primary mt-2">Mark as Picked Up</a>
+
+            {% elif active_order.status == "picked" %}
+                <a href="{% url 'drivers:update_status' active_order.id 'delivering' %}"
+                   class="btn btn-warning mt-2">Mark as Delivering</a>
+
+            {% elif active_order.status == "delivering" %}
+                <a href="{% url 'drivers:update_status' active_order.id 'delivered' %}"
+                   class="btn btn-success mt-2">Mark as Delivered</a>
+            {% endif %}
+
+        {% else %}
+            <p>No active orders.</p>
+        {% endif %}
+    </div>
+
+    <!-- AVAILABLE ORDERS -->
+    <div class="card p-4 mt-4">
+        <h4>🛒 Orders Available to Take</h4>
+        <hr>
+
+        {% if available_orders %}
+            {% for order in available_orders %}
+                <div class="p-3 border rounded mb-3">
+                    <p><strong>Order #{{ order.id }}</strong></p>
+                    <p>Restaurant: {{ order.restaurant.restaurant_profile.name }}</p>
+                    <p>Customer: {{ order.customer.username }}</p>
+                    <a href="{% url 'drivers:accept_order' order.id %}"
+                       class="btn btn-success mt-2">Accept Order</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No orders available.</p>
+        {% endif %}
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card p-4 mt-4 mb-5">
+        <h4>📜 Delivery History</h4>
+        <hr>
+
+        {% if history %}
+            {% for order in history %}
+                <div class="p-3 border rounded mb-3">
+                    <p><strong>Order #{{ order.id }}</strong></p>
+                    <p>Restaurant: {{ order.restaurant.restaurant_profile.name }}</p>
+                    <p>Status: {{ order.status }}</p>
+                    <p>Delivered at: {{ order.delivered_at }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No history yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

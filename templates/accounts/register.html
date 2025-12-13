@@ -1,0 +1,40 @@
+{% extends "base_auth.html" %}
+{% load form_tags %}
+{% block content %}
+
+<div class="min-h-screen flex justify-center items-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
+
+        <h2 class="text-3xl font-bold text-center brand-color mb-2">
+            Daftar Customer
+        </h2>
+        <p class="text-center text-gray-500 mb-6">Buat akun baru untuk mulai menggunakan layanan</p>
+
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- USERNAME -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nama Pengguna</label>
+                {{ form.username|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <!-- EMAIL -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                {{ form.email|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <!-- PASSWORD -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Sandi</label>
+                {{ form.password1|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <button type="submit" class="bg-orange-400 text-white px-4 py-2 rounded-xl w-full">Daftar</button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
