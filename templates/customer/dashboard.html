@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-orange-600">OkJek</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'customers:browse_restaurants' %}" class="text-gray-700 hover:text-orange-600">
+                        Browse Restoran
+                    </a>
+                    <a href="{% url 'customers:view_cart' %}" class="text-gray-700 hover:text-orange-600">
+                        Keranjang
+                    </a>
+                    <a href="{% url 'customers:customer_orders' %}" class="text-gray-700 hover:text-orange-600">
+                        Pesanan Saya
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="text-red-600 hover:text-red-800">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="px-4 py-6 sm:px-0">
+            <h2 class="text-3xl font-bold text-gray-900">Selamat Datang, {{ user.username }}!</h2>
+            <p class="mt-2 text-gray-600">Kelola pesanan Anda dan pesan makanan favorit</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+            <a href="{% url 'customers:browse_restaurants' %}" class="bg-gradient-to-r from-orange-500 to-red-500 overflow-hidden shadow rounded-lg hover:shadow-lg transition">
+                <div class="p-5 text-white">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium truncate">Pesan Makanan</dt>
+                                <dd class="text-lg font-semibold">Browse Restoran</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'customers:view_cart' %}" class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Keranjang</dt>
+                                <dd class="text-lg font-semibold text-gray-900">Lihat Cart</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'customers:customer_orders' %}" class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Pesanan Saya</dt>
+                                <dd class="text-lg font-semibold text-gray-900">{{ active_orders.count }} Aktif</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Active Orders -->
+        {% if active_orders %}
+        <div class="bg-white shadow rounded-lg mb-8">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Pesanan Aktif</h3>
+            </div>
+            <ul class="divide-y divide-gray-200">
+                {% for order in active_orders %}
+                <li class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-orange-600">Order #{{ order.id }}</p>
+                                <div class="ml-2 flex-shrink-0 flex">
+                                    <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                        {% elif order.status == 'accepted' %}bg-blue-100 text-blue-800
+                                        {% elif order.status == 'preparing' %}bg-purple-100 text-purple-800
+                                        {% elif order.status == 'ready_for_pickup' %}bg-indigo-100 text-indigo-800
+                                        {% elif order.status == 'picked' %}bg-cyan-100 text-cyan-800
+                                        {% elif order.status == 'delivering' %}bg-blue-100 text-blue-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ order.get_status_display }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:flex sm:justify-between">
+                                <div class="sm:flex">
+                                    <p class="flex items-center text-sm text-gray-500">
+                                        {{ order.restaurant.name }}
+                                    </p>
+                                    <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                        Rp {{ order.total_price|floatformat:0 }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-5 flex-shrink-0">
+                            <a href="{% url 'customers:order_detail' order.id %}" class="text-orange-600 hover:text-orange-800">
+                                Detail →
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <div class="bg-white shadow rounded-lg mb-8 p-6 text-center">
+            <p class="text-gray-500">Belum ada pesanan aktif</p>
+            <a href="{% url 'customers:browse_restaurants' %}" class="mt-4 inline-block bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700">
+                Mulai Pesan
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Recent Orders -->
+        {% if completed_orders %}
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Riwayat Pesanan</h3>
+            </div>
+            <ul class="divide-y divide-gray-200">
+                {% for order in completed_orders %}
+                <li class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">{{ order.restaurant.name }}</p>
+                            <p class="text-sm text-gray-500">Rp {{ order.total_price|floatformat:0 }} • {{ order.created_at|date:"d M Y" }}</p>
+                        </div>
+                        <a href="{% url 'customers:order_detail' order.id %}" class="text-orange-600 hover:text-orange-800">
+                            Detail
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,29 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="card shadow p-4">
-    <h3 class="mb-3">Create Restaurant</h3>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
 
-    <form method="POST">
-        {% csrf_token %}
+            <h3 class="fw-bold mb-4 text-primary">Create Restaurant</h3>
 
-        <div class="mb-3">
-            <label>Name</label>
-            <input type="text" name="name" class="form-control" required>
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Name -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-2 col-form-label fw-semibold">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="name" class="form-control rounded-3" placeholder="ex: Mie Ayam Enak" required>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-2 col-form-label fw-semibold">Address</label>
+                    <div class="col-sm-10">
+                        <textarea name="address" class="form-control rounded-3" rows="2" placeholder="Restaurant location"></textarea>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="row mb-4 align-items-center">
+                    <label class="col-sm-2 col-form-label fw-semibold">Description</label>
+                    <div class="col-sm-10">
+                        <textarea name="description" class="form-control rounded-3" rows="3" placeholder="Short description"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg px-4 rounded-3">
+                    Save
+                </button>
+
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label>Address</label>
-            <textarea name="address" class="form-control"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label>Description</label>
-            <textarea name="description" class="form-control"></textarea>
-        </div>
-
-        <button class="btn btn-primary">Save</button>
-    </form>
+    </div>
 </div>
 
 {% endblock %}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Order #{{ order.id }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-2xl font-bold text-orange-600">OkJek</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-gray-700 hover:text-orange-600">Dashboard</a>
+                    <a href="{% url 'customers:customer_orders' %}" class="text-gray-700 hover:text-orange-600">Pesanan</a>
+                    <a href="{% url 'accounts:logout' %}" class="text-red-600 hover:text-red-800">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="mb-6">
+            <a href="{% url 'customers:customer_orders' %}" class="text-orange-600 hover:text-orange-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Kembali ke Pesanan
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Order Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Status Card -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Order #{{ order.id }}</h2>
+                        <span class="px-4 py-2 text-sm font-semibold rounded-full
+                            {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% elif order.status == 'accepted' %}bg-blue-100 text-blue-800
+                            {% elif order.status == 'preparing' %}bg-purple-100 text-purple-800
+                            {% elif order.status == 'ready_for_pickup' %}bg-indigo-100 text-indigo-800
+                            {% elif order.status == 'picked' %}bg-cyan-100 text-cyan-800
+                            {% elif order.status == 'delivering' %}bg-blue-100 text-blue-800
+                            {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+                            {% elif order.status == 'completed' %}bg-green-100 text-green-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Progress Timeline -->
+                    <div class="space-y-4 mt-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full {% if order.status != 'pending' %}bg-green-500{% else %}bg-orange-500{% endif %} flex items-center justify-center text-white">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Pesanan Dibuat</p>
+                                <p class="text-xs text-gray-500">{{ order.created_at|date:"d M Y H:i" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full {% if order.status in 'accepted,preparing,ready_for_pickup,picked,delivering,delivered,completed' %}bg-green-500{% else %}bg-gray-300{% endif %} flex items-center justify-center text-white">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Restoran Konfirmasi</p>
+                                <p class="text-xs text-gray-500">{{ order.restaurant.name }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full {% if order.status in 'picked,delivering,delivered,completed' %}bg-green-500{% else %}bg-gray-300{% endif %} flex items-center justify-center text-white">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Driver Mengambil</p>
+                                {% if order.driver %}
+                                <p class="text-xs text-gray-500">{{ order.driver.username }}</p>
+                                {% else %}
+                                <p class="text-xs text-gray-400">Menunggu driver...</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full {% if order.status in 'delivered,completed' %}bg-green-500{% else %}bg-gray-300{% endif %} flex items-center justify-center text-white">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Pesanan Tiba</p>
+                                {% if order.delivered_at %}
+                                <p class="text-xs text-gray-500">{{ order.delivered_at|date:"d M Y H:i" }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Card -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Item Pesanan</h3>
+                    <div class="space-y-3">
+                        {% for item in order.items.all %}
+                        <div class="flex justify-between items-center pb-3 border-b last:border-b-0">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ item.item_name }}</p>
+                                <p class="text-sm text-gray-500">{{ item.quantity }} × Rp {{ item.price|floatformat:0 }}</p>
+                            </div>
+                            <p class="font-semibold text-gray-900">Rp {{ item.subtotal|floatformat:0 }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+                    <h3 class="text-lg font-semibold mb-4">Ringkasan</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span class="font-medium">Rp {{ order.total_price|floatformat:0 }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Biaya Kirim</span>
+                            <span class="font-medium">Rp 10.000</span>
+                        </div>
+                        <div class="flex justify-between pt-3 border-t text-lg font-bold">
+                            <span>Total</span>
+                            <span class="text-orange-600">Rp {{ order.total_price|add:10000|floatformat:0 }}</span>
+                        </div>
+                    </div>
+
+                    {% if order.notes %}
+                    <div class="mt-6 pt-6 border-t">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Catatan:</p>
+                        <p class="text-sm text-gray-600">{{ order.notes }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-6 pt-6 border-t text-xs text-gray-500">
+                        <p>Dibuat: {{ order.created_at|date:"d M Y H:i" }}</p>
+                        <p>Terakhir update: {{ order.updated_at|date:"d M Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

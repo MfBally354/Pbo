@@ -1,13 +1,47 @@
 {% extends "base_auth.html" %}
+{% load form_tags %}
 {% block content %}
-<form method="POST" class="space-y-3">
-    {% csrf_token %}
-    {{ form.as_p }}
 
-    <button class="btn btn-dark w-full py-2 mt-2">Daftar Driver</button>
-</form>
+<div class="min-h-screen flex justify-center items-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
 
-<div class="text-center mt-3">
-    <a href="{% url 'accounts:login' %}" class="text-blue-600">Sudah punya akun?</a>
+        <h2 class="text-3xl font-bold text-center brand-color mb-2">
+            Daftar Driver
+        </h2>
+        <p class="text-center text-gray-500 mb-6">Lengkapi informasi untuk menjadi driver</p>
+
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Loop semua field driver -->
+            {% for field in form %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+
+                    {% if field.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-semibold transition">
+                Daftar Driver
+            </button>
+
+            <p class="text-center text-sm pt-2">
+                Sudah punya akun?
+                <a href="{% url 'accounts:login' %}" class="text-orange-600 hover:underline font-medium">
+                    Login
+                </a>
+            </p>
+
+        </form>
+
+    </div>
 </div>
+
 {% endblock %}

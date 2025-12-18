@@ -1,26 +1,107 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+    /* Card modern */
+    .card-modern {
+        background: #fff;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: 0.3s ease;
+    }
+    .card-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* Input modern */
+    .input-modern {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        transition: 0.2s ease;
+        background: #fafafa;
+    }
+    .input-modern:focus {
+        background: #fff;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+
+    /* Label */
+    .label-modern {
+        font-weight: 600;
+        margin-top: 15px;
+        display: block;
+    }
+
+    /* Button primary */
+    .btn-purple {
+        background: #6366f1;
+        border: none;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+    .btn-purple:hover {
+        background: #4f46e5;
+        transform: translateY(-2px);
+    }
+
+    /* Layout 2 kolom */
+    .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .menu-image {
+        width: 100%;
+        border-radius: 12px;
+        height: 140px;
+        object-fit: cover;
+    }
+</style>
+
+
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center">
+
+    <div class="d-flex justify-content-between mb-3">
         <h3>📋 Restaurant Menu</h3>
-        <a href="{% url 'restaurants:menu_add' %}" class="btn btn-success">+ Add Menu Item</a>
+        <div>
+            <a href="{% url 'restaurants:dashboard' %}" class="btn btn-secondary">⬅ Dashboard</a>
+            <a href="{% url 'restaurants:menu_add' resto.id %}" class="btn btn-purple">+ Add Menu</a>
+        </div>
     </div>
 
-    <div class="mt-4">
-        {% for item in menu %}
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>{{ item.name }} — Rp {{ item.price }}</h5>
+    <div class="two-col">
+        {% for item in menus %}
+        <div class="card-modern">
+
+            {% if item.image %}
+                <img src="{{ item.image.url }}" class="menu-image mb-2">
+            {% endif %}
+
+            <h5>{{ item.name }}</h5>
+            <p class="text-muted">Rp {{ item.price }}</p>
+
             <p>{{ item.description }}</p>
 
-            <a href="{% url 'restaurants:menu_edit' item.id %}" class="btn btn-warning btn-sm">Edit</a>
-            <a href="{% url 'restaurants:menu_delete' item.id %}" class="btn btn-danger btn-sm"
-               onclick="return confirm('Delete menu item?')">Delete</a>
+            <p><strong>Stock:</strong> {{ item.stock }}</p>
+
+            <div class="mt-3 d-flex gap-2">
+                <a href="{% url 'restaurants:menu_edit' resto.id item.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'restaurants:menu_delete' resto.id item.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+
         </div>
-        {% empty %}
-        <p>No menu yet.</p>
         {% endfor %}
     </div>
+
 </div>
 
 {% endblock %}

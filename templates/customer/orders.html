@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesanan Saya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-2xl font-bold text-orange-600">OkJek</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'customers:customer_dashboard' %}" class="text-gray-700 hover:text-orange-600">Dashboard</a>
+                    <a href="{% url 'customers:browse_restaurants' %}" class="text-gray-700 hover:text-orange-600">Restoran</a>
+                    <a href="{% url 'accounts:logout' %}" class="text-red-600 hover:text-red-800">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Semua Pesanan</h2>
+
+        {% if orders %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="divide-y divide-gray-200">
+                {% for order in orders %}
+                <div class="p-6 hover:bg-gray-50 transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">Order #{{ order.id }}</h3>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full
+                                    {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif order.status == 'accepted' %}bg-blue-100 text-blue-800
+                                    {% elif order.status == 'preparing' %}bg-purple-100 text-purple-800
+                                    {% elif order.status == 'ready_for_pickup' %}bg-indigo-100 text-indigo-800
+                                    {% elif order.status == 'picked' %}bg-cyan-100 text-cyan-800
+                                    {% elif order.status == 'delivering' %}bg-blue-100 text-blue-800
+                                    {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+                                    {% elif order.status == 'completed' %}bg-green-100 text-green-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <p><span class="font-medium">Restoran:</span> {{ order.restaurant.name }}</p>
+                                <p><span class="font-medium">Driver:</span> 
+                                    {% if order.driver %}
+                                        {{ order.driver.username }}
+                                    {% else %}
+                                        <span class="text-gray-400">Belum ada driver</span>
+                                    {% endif %}
+                                </p>
+                                <p><span class="font-medium">Total:</span> <span class="text-orange-600 font-bold">Rp {{ order.total_price|floatformat:0 }}</span></p>
+                                <p><span class="font-medium">Tanggal:</span> {{ order.created_at|date:"d M Y H:i" }}</p>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'customers:order_detail' order.id %}" 
+                           class="ml-4 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <p class="text-gray-500 text-xl mb-6">Belum ada pesanan</p>
+            <a href="{% url 'customers:browse_restaurants' %}" 
+               class="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition">
+                Mulai Pesan
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

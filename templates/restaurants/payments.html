@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>💰 Payment History — {{ restaurant.name }}</h2>
+
+    <a href="{% url 'restaurants:dashboard' %}" class="btn btn-secondary mb-3">⬅ Back</a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Paid At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pay in payments %}
+            <tr>
+                <td>#{{ pay.order.id }}</td>
+                <td>Rp {{ pay.amount }}</td>
+                <td>{{ pay.method }}</td>
+                <td>{{ pay.status }}</td>
+                <td>{{ pay.paid_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No payment recorded yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

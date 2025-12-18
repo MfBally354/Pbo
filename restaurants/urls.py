@@ -14,6 +14,7 @@ urlpatterns = [
 
     # menu
     path('<int:resto_id>/menus/', views.menu_list, name='menu_list'),
+    path('<int:restaurant_id>/menus/add/', views.menu_add, name='menu_add'),
     path('<int:resto_id>/menus/create/', views.menu_create, name='menu_create'),
     path('<int:resto_id>/menus/<int:id>/edit/', views.menu_edit, name='menu_edit'),
     path('<int:resto_id>/menus/<int:id>/delete/', views.menu_delete, name='menu_delete'),
@@ -25,5 +26,8 @@ urlpatterns = [
     path("orders/<int:order_id>/ready/", views.ready_order, name="ready_order"),
 
     # PAYMENT
-    path("orders/<int:order_id>/payment/", views.payment_view, name="payment_view"),
+    path('<int:resto_id>/orders/', views.restaurant_orders, name='restaurant_orders'),
+    path('payment/<int:order_id>/', views.payment_view, name='payment_view'),
+    path('<int:restaurant_id>/payments/', views.restaurant_payments, name='restaurant_payments'),
+
 ]

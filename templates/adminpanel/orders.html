@@ -30,30 +30,6 @@
         color: white;
     }
 
-    .btn-success {
-        background: linear-gradient(135deg, #00c853, #009d3d);
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        text-decoration: none;
-        border: none;
-        font-weight: 600;
-        transition: 0.2s ease;
-        cursor: pointer;
-        display: inline-block;
-    }
-
-    .btn-success:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
-        color: white;
-    }
-
-    .header-actions {
-        display: flex;
-        gap: 10px;
-    }
-
     .stats-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -176,35 +152,6 @@
         color: white;
     }
 
-    .btn-status {
-        background-color: #ff6f00;
-        color: white;
-    }
-
-    .btn-status:hover {
-        background-color: #ff3d00;
-        color: white;
-    }
-
-    .btn-assign {
-        background-color: #00c853;
-        color: white;
-    }
-
-    .btn-assign:hover {
-        background-color: #009d3d;
-        color: white;
-    }
-
-    .btn-delete {
-        background-color: #ff3d00;
-        color: white;
-    }
-
-    .btn-delete:hover {
-        background-color: #dd2c00;
-    }
-
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -254,14 +201,12 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0,0,0,0.5);
-        
     }
 
     .order-modal.show {
         display: flex !important;
         align-items: center;
         justify-content: center;
-        pointer-events: auto !important;
     }
 
     .order-modal-content {
@@ -297,56 +242,6 @@
         color: #333;
     }
 
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: 0.2s ease;
-        box-sizing: border-box;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #b620ff;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-        margin-top: 20px;
-    }
-
-    .btn-cancel {
-        background-color: #999;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .btn-cancel:hover {
-        background-color: #777;
-    }
-
     .detail-section {
         margin-bottom: 20px;
         padding: 15px;
@@ -372,16 +267,31 @@
     .items-list li:last-child {
         border-bottom: none;
     }
+
+    .read-only-notice {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2979ff;
+    }
+
+    .read-only-notice p {
+        margin: 0;
+        color: #0d47a1;
+        font-weight: 500;
+    }
 </style>
 
 <div class="container mt-5">
     
     <div class="page-header">
-        <h1 class="fw-bold">📦 Manage Orders</h1>
-        <div class="header-actions">
-            <button onclick="openAddModal()" class="btn-success">+ Add Order</button>
-            <a href="{% url 'accounts:admin_dashboard' %}" class="btn-primary">← Back to Dashboard</a>
-        </div>
+        <h1 class="fw-bold">📦 View Orders</h1>
+        <a href="{% url 'accounts:admin_dashboard' %}" class="btn-primary">← Back to Dashboard</a>
+    </div>
+
+    <div class="read-only-notice">
+        <p>ℹ️ <strong>Read-Only Mode:</strong> You can view order details but cannot modify or delete orders.</p>
     </div>
 
     {% if messages %}
@@ -483,15 +393,7 @@
                     <td>{{ order.created_at|date:"d M Y H:i" }}</td>
                     <td>
                         <div class="action-buttons">
-                            <button onclick="viewOrder({{ order.id }})" class="btn-sm btn-view" title="View Details">👁️</button>
-                            <button onclick="openStatusModal({{ order.id }}, '{{ order.status }}')" class="btn-sm btn-status" title="Change Status">🔄</button>
-                            {% if not order.driver %}
-                            <button onclick="openAssignDriverModal({{ order.id }})" class="btn-sm btn-assign" title="Assign Driver">🚚</button>
-                            {% endif %}
-                            <form method="POST" action="{% url 'accounts:delete_order' order.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this order?');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-sm btn-delete" title="Delete">🗑️</button>
-                            </form>
+                            <button onclick="viewOrder({{ order.id }})" class="btn-sm btn-view" title="View Details">👁️ View Details</button>
                         </div>
                     </td>
                 </tr>
@@ -502,125 +404,17 @@
         <div class="empty-state">
             <h3>📦 No Orders Yet</h3>
             <p>There are no orders in the system.</p>
-            <button onclick="openAddModal()" class="btn-success" style="margin-top: 20px;">+ Add First Order</button>
         </div>
         {% endif %}
     </div>
 
 </div>
 
-<!-- Add Order Modal -->
-<div id="addOrderModal" class="order-modal">
-    <div class="order-modal-content">
-        <div class="order-modal-header">
-            <h2>Add New Order</h2>
-            <button class="close-btn" onclick="closeAddModal()">&times;</button>
-        </div>
-        <form method="POST" action="{% url 'accounts:add_order' %}">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="customer_id">Customer *</label>
-                <select id="customer_id" name="customer_id" required>
-                    <option value="">Select Customer</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="restaurant_id">Restaurant *</label>
-                <select id="restaurant_id" name="restaurant_id" required>
-                    <option value="">Select Restaurant</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="driver_id">Driver (Optional)</label>
-                <select id="driver_id" name="driver_id">
-                    <option value="">Select Driver</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="total_price">Total Price *</label>
-                <input type="number" id="total_price" name="total_price" step="0.01" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="delivery_address">Delivery Address</label>
-                <textarea id="delivery_address" name="delivery_address" rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes" rows="2"></textarea>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
-                <button type="submit" class="btn-success">Create Order</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Change Status Modal -->
-<div id="statusModal" class="order-modal">
-    <div class="order-modal-content">
-        <div class="order-modal-header">
-            <h2>Change Order Status</h2>
-            <button class="close-btn" onclick="closeStatusModal()">&times;</button>
-        </div>
-        <form id="statusForm" method="POST" action="">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="status">New Status *</label>
-                <select id="status" name="status" required>
-                    <option value="pending">⏳ Pending</option>
-                    <option value="confirmed">✓ Confirmed</option>
-                    <option value="preparing">👨‍🍳 Preparing</option>
-                    <option value="delivering">🚚 Delivering</option>
-                    <option value="completed">✓ Completed</option>
-                    <option value="cancelled">✗ Cancelled</option>
-                </select>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" onclick="closeStatusModal()">Cancel</button>
-                <button type="submit" class="btn-success">Update Status</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Assign Driver Modal -->
-<div id="assignDriverModal" class="order-modal">
-    <div class="order-modal-content">
-        <div class="order-modal-header">
-            <h2>Assign Driver</h2>
-            <button class="close-btn" onclick="closeAssignDriverModal()">&times;</button>
-        </div>
-        <form id="assignDriverForm" method="POST" action="">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="assign_driver_id">Select Driver *</label>
-                <select id="assign_driver_id" name="driver_id" required>
-                    <option value="">Select Driver</option>
-                </select>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" onclick="closeAssignDriverModal()">Cancel</button>
-                <button type="submit" class="btn-success">Assign Driver</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- View Order Modal -->
+<!-- View Order Modal (Read-Only) -->
 <div id="viewOrderModal" class="order-modal">
     <div class="order-modal-content">
         <div class="order-modal-header">
-            <h2>Order Details</h2>
+            <h2>📋 Order Details (Read-Only)</h2>
             <button class="close-btn" onclick="closeViewOrderModal()">&times;</button>
         </div>
         <div id="orderDetailContent"></div>
@@ -649,107 +443,50 @@ function filterOrders(status) {
     });
 }
 
-// Add Order Modal
-function openAddModal() {
-    fetch('/api/usersfororder/')
-        .then(response => response.json())
-        .then(data => {
-            const customerSelect = document.getElementById('customer_id');
-            const restaurantSelect = document.getElementById('restaurant_id');
-            const driverSelect = document.getElementById('driver_id');
-            
-            customerSelect.innerHTML = '<option value="">Select Customer</option>';
-            data.customers.forEach(c => {
-                customerSelect.innerHTML += `<option value="${c.id}">${c.username} (${c.email})</option>`;
-            });
-            
-            restaurantSelect.innerHTML = '<option value="">Select Restaurant</option>';
-            data.restaurants.forEach(r => {
-                restaurantSelect.innerHTML += `<option value="${r.id}">${r.username}</option>`;
-            });
-            
-            driverSelect.innerHTML = '<option value="">Select Driver</option>';
-            data.drivers.forEach(d => {
-                driverSelect.innerHTML += `<option value="${d.id}">${d.username}</option>`;
-            });
-            
-            document.getElementById('addOrderModal').classList.add('show');
-        });
-}
-
-function closeAddModal() {
-    document.getElementById('addOrderModal').classList.remove('show');
-}
-
-// Status Modal
-function openStatusModal(orderId, currentStatus) {
-    document.getElementById('statusForm').action = `/accounts/orders/update-status/${orderId}/`;
-    document.getElementById('status').value = currentStatus;
-    document.getElementById('statusModal').classList.add('show');
-}
-
-function closeStatusModal() {
-    document.getElementById('statusModal').classList.remove('show');
-}
-
-// Assign Driver Modal
-function openAssignDriverModal(orderId) {
-    fetch('/api/usersfororder/')
-        .then(response => response.json())
-        .then(data => {
-            const driverSelect = document.getElementById('assign_driver_id');
-            driverSelect.innerHTML = '<option value="">Select Driver</option>';
-            data.drivers.forEach(d => {
-                driverSelect.innerHTML += `<option value="${d.id}">${d.username}</option>`;
-            });
-            
-            document.getElementById('assignDriverForm').action = `/accounts/orders/assign-driver/${orderId}/`;
-            document.getElementById('assignDriverModal').classList.add('show');
-        });
-}
-
-function closeAssignDriverModal() {
-    document.getElementById('assignDriverModal').classList.remove('show');
-}
-
-// View Order Details
+// View Order Details (Read-Only)
 function viewOrder(orderId) {
-    fetch(`/api/order/${orderId}/`)
+    fetch(`/accounts/api/order/${orderId}/`)
         .then(response => response.json())
         .then(data => {
             let itemsHTML = '<ul class="items-list">';
-            data.items.forEach(item => {
-                itemsHTML += `<li>${item.quantity}x ${item.name} - Rp ${item.price} (Subtotal: Rp ${item.subtotal})</li>`;
-            });
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    itemsHTML += `<li>${item.quantity}x ${item.name} - Rp ${item.price} (Subtotal: Rp ${item.subtotal})</li>`;
+                });
+            } else {
+                itemsHTML += '<li style="color: #999;">No items</li>';
+            }
             itemsHTML += '</ul>';
             
             const content = `
                 <div class="detail-section">
-                    <h4>Customer Information</h4>
+                    <h4>📍 Customer Information</h4>
                     <p><strong>Name:</strong> ${data.customer.name}</p>
                     <p><strong>Email:</strong> ${data.customer.email}</p>
                 </div>
                 
                 <div class="detail-section">
-                    <h4>Order Information</h4>
+                    <h4>📦 Order Information</h4>
+                    <p><strong>Order ID:</strong> #${data.id}</p>
                     <p><strong>Restaurant:</strong> ${data.restaurant.name}</p>
                     <p><strong>Driver:</strong> ${data.driver.name}</p>
-                    <p><strong>Status:</strong> ${data.status}</p>
+                    <p><strong>Status:</strong> <span class="badge badge-${data.status}">${data.status}</span></p>
                     <p><strong>Total Price:</strong> Rp ${data.total_price}</p>
                 </div>
                 
                 <div class="detail-section">
-                    <h4>Items Ordered</h4>
+                    <h4>🍽️ Items Ordered</h4>
                     ${itemsHTML}
                 </div>
                 
                 <div class="detail-section">
-                    <h4>Delivery Information</h4>
-                    <p><strong>Address:</strong> ${data.delivery_address}</p>
-                    <p><strong>Notes:</strong> ${data.notes}</p>
+                    <h4>🚚 Delivery Information</h4>
+                    <p><strong>Address:</strong> ${data.delivery_address || 'N/A'}</p>
+                    <p><strong>Notes:</strong> ${data.notes || 'No notes'}</p>
                 </div>
                 
                 <div class="detail-section">
+                    <h4>📅 Timeline</h4>
                     <p><strong>Created:</strong> ${data.created_at}</p>
                     <p><strong>Last Updated:</strong> ${data.updated_at}</p>
                 </div>
@@ -760,44 +497,22 @@ function viewOrder(orderId) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to load order details');
+            document.getElementById('orderDetailContent').innerHTML = '<p style="text-align: center; color: #ff3d00;">Failed to load order details</p>';
+            document.getElementById('viewOrderModal').classList.add('show');
         });
 }
 
 function closeViewOrderModal() {
     document.getElementById('viewOrderModal').classList.remove('show');
-    closeAllModals();
 }
 
-// Close modals when clicking outside
+// Close modal when clicking outside
 window.onclick = function(event) {
-    const modals = ['addOrderModal', 'statusModal', 'assignDriverModal', 'viewOrderModal'];
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (event.target == modal) {
-            modal.classList.remove('show');
-        }
-    });
+    const modal = document.getElementById('viewOrderModal');
+    if (event.target == modal) {
+        closeViewOrderModal();
+    }
 }
 </script>
-
-
-
-<script>
-// Tutup semua modal sekaligus
-function closeAllModals() {
-    document.querySelectorAll('.order-modal').forEach(m => {
-        m.classList.remove('show');
-    });
-}
-
-// Tutup modal jika klik di luar konten
-window.addEventListener('click', function(e) {
-    document.querySelectorAll('.order-modal').forEach(modal => {
-        if (e.target === modal) modal.classList.remove('show');
-    });
-});
-</script>
-
 
 {% endblock %}

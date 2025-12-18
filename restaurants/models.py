@@ -22,12 +22,21 @@ class MenuCategory(models.Model):
 
 
 class MenuItem(models.Model):
-    restaurant = models.ForeignKey(User, on_delete=models.CASCADE, related_name="menu_items")
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="menu_items"
+    )
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    stock = models.IntegerField(default=0)
+    # models.py
+    image = models.ImageField(upload_to="menu_images/", blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.name} ({self.restaurant.username})"
+
+    def _str_(self):
+        return f"{self.name} ({self.restaurant.name})"
+

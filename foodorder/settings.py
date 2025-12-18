@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     'payments',
     'theme',
     "tailwind",
-    # "django_browser_reload",
+    "django_browser_reload",
 ]
 
 TAILWIND_APP_NAME = 'theme'
@@ -70,6 +71,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / "templates"],  # tambahkan ini
+        
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,6 +84,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodorder.wsgi.application'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 # Database
@@ -145,3 +150,7 @@ DJANGO_BROWSER_RELOAD_EXCLUDE = [
     # Ini akan mengecualikan semua path yang dimulai dengan /restaurants/
     '/restaurants/', 
 ]
+
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

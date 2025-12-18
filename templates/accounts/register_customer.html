@@ -1,19 +1,51 @@
 {% extends "base_auth.html" %}
+{% load form_tags %}
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-6">
-    <h2 class="text-2xl font-semibold text-center mb-6">Register</h2>
 
-    <form method="POST" class="space-y-4">
-        {% csrf_token %}
-        <div class="space-y-3">
-            {{ form.as_p }}
-        </div>
+<div class="min-h-screen flex justify-center items-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
 
-        <a href="{% url 'accounts:login' %}" class="text-blue-600 text-sm">« Back to Login</a>
+        <h2 class="text-3xl font-bold text-center brand-color mb-2">
+            Daftar Akun
+        </h2>
+        <p class="text-center text-gray-500 mb-6">Lengkapi data untuk membuat akun Anda</p>
 
-        <button class="w-full bg-lime-600 hover:bg-lime-700 text-white py-2 rounded-lg transition duration-200">
-            Register
-        </button>
-    </form>
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nama Pengguna</label>
+                {{ form.username|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                {{ form.email|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Sandi</label>
+                {{ form.password1|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Konfirmasi Sandi</label>
+                {{ form.password2|add_class:"mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:outline-none" }}
+            </div>
+
+            <button class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-semibold transition">
+                Daftar
+            </button>
+
+            <p class="text-center text-sm pt-2">
+                Sudah punya akun?
+                <a href="{% url 'accounts:login' %}" class="text-orange-600 hover:underline font-medium">
+                    Login
+                </a>
+            </p>
+
+        </form>
+    </div>
 </div>
+
 {% endblock %}

@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from orders.models import Order
+from accounts.models import User
 
 
 # =============================
@@ -70,6 +71,8 @@ def register_restaurant(request):
 # =============================
 # LOGIN / LOGOUT
 # =============================
+# Di accounts/views.py, update fungsi login_view:
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -86,13 +89,17 @@ def login_view(request):
 
             # Driver
             if user.role == "driver":
-                return redirect("drivers:dashboard")
+                return redirect("drivers:driver_dashboard")
 
             # Restaurant
             if user.role == "restaurant":
                 return redirect("restaurants:dashboard")
 
-            # Customer
+            # Customer - TAMBAHKAN INI
+            if user.role == "customer":
+                return redirect("customers:customer_dashboard")
+
+            # Default fallback
             return redirect("home")
 
         return render(request, "accounts/login.html", {

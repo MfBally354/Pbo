@@ -2,6 +2,8 @@ from django.db import models
 from accounts.models import User
 from django.conf import settings
 from django.utils import timezone
+from restaurants.models import Restaurant
+
 
 # class Order(models.Model):
 #     STATUS_CHOICES = [
@@ -85,7 +87,7 @@ class Order(models.Model):
     ]
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer_orders')
-    restaurant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='restaurant_orders')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='orders')
     driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='driver_orders')
 
     # order details (contoh sederhana)
