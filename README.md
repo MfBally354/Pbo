@@ -104,3 +104,4 @@ Teknik Elektro -- Universitas Negeri Semarang
 ## 📞 Bantuan
 
 Jika mengalami error, silakan kontak developer.
+Email: iqbalguntur313@gmail.com
