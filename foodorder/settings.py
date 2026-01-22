@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s%7ra55+j=qlx!8cf+(1jt0f9krpq$xqa&35!h%w0@glxh20f$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pibal', 'localhost', '127.0.0.1', '192.168.1.16']
+ALLOWED_HOSTS = ['pibal', 'localhost', '127.0.0.1']
 
 
 # Application definition
